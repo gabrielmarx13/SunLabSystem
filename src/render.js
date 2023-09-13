@@ -1,3 +1,10 @@
+/*  This is the "front-end" renderer Chromium context, 
+    except I'm allowing Node integration and disabling 
+    context isolation and running the DB here to prevent 
+    unnecessary IPC work, essentially transforming the
+    back-end and front-end into one context in this app.
+*/
+
 const { initializeApp } = require("firebase/app");
 const firebase = require("firebase/compat/app");
 require("firebase/firestore");
