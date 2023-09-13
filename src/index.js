@@ -1,17 +1,20 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const db = import("./db.mjs")
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
-const createWindow = () => {
+const createWindow = async () => {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 800,
-        height: 600
+        height: 600,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false
+        }
     });
 
     // and load the index.html of the app.
