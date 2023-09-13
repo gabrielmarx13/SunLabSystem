@@ -11,4 +11,5 @@ Powered by:
 https://www.youtube.com/watch?v=QtsVrC6_x68
 
 # Distribution Note
-Electron creates massive file sizes- it's known for it. I can't actually release the .exe on GitHub. Let me know if you need it to grade this assignment.
+You can download and try out the program here: https://drive.google.com/file/d/18H7w6WMIcX_vDoBTBzL8VOfBH48-9faX/view?usp=sharing
+(It was too big for a GitHub release)
