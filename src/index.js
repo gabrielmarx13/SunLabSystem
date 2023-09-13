@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -9,8 +9,8 @@ if (require('electron-squirrel-startup')) {
 const createWindow = async () => {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1080,
+        height: 720,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
@@ -21,6 +21,12 @@ const createWindow = async () => {
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
     //mainWindow.webContents.openDevTools();
+
+    // See existical's fix for this active Electron issue https://github.com/electron/electron/issues/31917#issuecomment-1061142818
+    ipcMain.on('focus-fix', () => {
+        mainWindow.blur();
+        mainWindow.focus();
+    });
 };
 
 // This method will be called when Electron has finished

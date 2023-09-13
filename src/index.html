@@ -2,14 +2,51 @@
 <html>
 
 <head>
-  <meta charset="UTF-8" />
-  <title>SUN Lab System</title>
-  <link rel="stylesheet" href="index.css" />
-  <script src="./render.js" defer></script>
+    <meta charset="UTF-8" />
+    <title>SUN Lab System</title>
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+    <script src="./render.js" defer></script>
 </head>
 
 <body>
-  <list id="userlist">List of Users</list>
+    <div id="swipe-menu">
+        <form id="swipe-form">
+            <input id="swipe-code-area">
+            <div id="in-out-radio">
+                <input type="radio" id="in" name="in-out">
+                <label for="in">In</label>
+                <input type="radio" id="out" name="in-out">
+                <label for="out">Out</label>
+                <input type="radio" id="admin" name="in-out">
+                <label for="admin">Admin</label>
+            </div>
+            <input type="submit" value="Swipe">
+        </form>
+    </div>
+    <div id="filter-div" style="display: none">
+        <form id="filter-form">
+            <label for="filter-id">ID</label>
+            <input id="filter-id">
+            <label for="filter-date-start">Start Date</label>
+            <input type="date" id="filter-date-start">
+            <label for="filter-date-end">End Date</label>
+            <input type="date" id="filter-date-end">
+            <label for="filter-time">Start Time</label>
+            <input type="time" id="filter-time-start">
+            <label for="filter-time">End Time</label>
+            <input type="time" id="filter-time-end">
+            <input type="submit" value="Filter">
+        </form>
+    </div>
+    <div id="admin-menu">
+        <div id="swipe-list-div">
+            <h2 id="swipe-list-title"></h2>
+            <ul id="swipe-list"></ul>
+        </div>
+        <div id="student-list-div">
+            <h2 id="student-list-title"></h2>
+            <ul id="student-list"></ul>
+        </div>
+    </div>
 </body>
-
 </html>
