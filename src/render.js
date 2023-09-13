@@ -92,7 +92,7 @@ const userQuery = async function () {
                 swipeQuery();
                 userHydrate();
             }
-            
+
             if (selectedOption == "admin") {
                 alert("Welcome to the administrator tools.")
             } else {
@@ -106,7 +106,7 @@ const userQuery = async function () {
     document.getElementById("swipe-form").addEventListener("submit", swipeSubmit);
 
     const userHydrate = () => {
-        document.getElementById("student-list-title").textContent = "ID List";
+        document.getElementById("student-list-title").textContent = "ID List: Name, ID, Status, Set Permission";
         userQueryContent.forEach((d) => {
             let liToAppend = document.createElement("li");
             liToAppend.id = "student-flexbox";
@@ -136,6 +136,7 @@ const userQuery = async function () {
                 button.removeEventListener("click", suspend);
                 button.addEventListener("click", reactivate);
                 button.value = "Reactivate";
+                liToAppend.style.backgroundColor = "red";
                 await updateDoc(docRef, {
                     status: "suspended"
                 });
@@ -145,6 +146,7 @@ const userQuery = async function () {
                 button.removeEventListener("click", activate);
                 button.addEventListener("click", suspend);
                 button.value = "Suspend";
+                liToAppend.style.backgroundColor = "green";
                 await updateDoc(docRef, {
                     status: "activated"
                 });
@@ -154,6 +156,7 @@ const userQuery = async function () {
                 button.removeEventListener("click", reactivate);
                 button.addEventListener("click", suspend)
                 button.value = "Suspend";
+                liToAppend.style.backgroundColor = "yellow";
                 await updateDoc(docRef, {
                     status: "reactivated"
                 });
@@ -163,18 +166,22 @@ const userQuery = async function () {
                 case "unactivated":
                     button.value = "Activate"
                     button.addEventListener("click", activate);
+                    liToAppend.style.backgroundColor = "gray";
                     break;
                 case "activated":
                     button.value = "Suspend"
                     button.addEventListener("click", suspend);
+                    liToAppend.style.backgroundColor = "green";
                     break;
                 case "suspended":
                     button.value = "Reactivate"
                     button.addEventListener("click", reactivate);
+                    liToAppend.style.backgroundColor = "red";
                     break;
                 case "reactivated":
                     button.value = "Suspend"
                     button.addEventListener("click", suspend);
+                    liToAppend.style.backgroundColor = "yellow";
                     break;
                 default:
                     button.value = "Error"
@@ -191,7 +198,7 @@ const swipeQuery = async function () {
     swipeQueryContent = await getDocs(collection(db, "swipes"));
 
     const swipeHydrate = () => {
-        document.getElementById("swipe-list-title").textContent = "Swipe List";
+        document.getElementById("swipe-list-title").textContent = "Swipe List: ID, In/Out, Timestamp";
         swipeQueryContent.forEach(async (d) => {
 
             const docRef = doc(db, "swipes", d.id)
@@ -200,20 +207,19 @@ const swipeQuery = async function () {
             } else {
                 let liToAppend = document.createElement("li");
                 liToAppend.id = "swipe-flexbox";
-    
+
                 let idDiv = document.createElement("div");
                 idDiv.id = "id-div";
                 idDiv.textContent = `${d.data().id}`;
                 liToAppend.appendChild(idDiv);
-    
+
                 let inOutDiv = document.createElement("div");
                 inOutDiv.id = "inOut-div";
                 inOutDiv.textContent = `${d.data().inOut}`;
                 liToAppend.appendChild(inOutDiv);
-    
+
                 let timestampDiv = document.createElement("div");
                 timestampDiv.id = "timestamp-div";
-    
                 const dateObject = new Date(d.data().timestamp);
                 const year = dateObject.getFullYear();
                 const month = dateObject.getMonth() + 1;
@@ -221,10 +227,17 @@ const swipeQuery = async function () {
                 const hours = dateObject.getHours();
                 const minutes = dateObject.getMinutes();
                 const seconds = dateObject.getSeconds();
-    
+
                 timestampDiv.textContent = `${year}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day} ${hours < 10 ? "0" + hours : hours}:${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
                 liToAppend.appendChild(timestampDiv);
-    
+
+                let epochDiv = document.createElement("div");
+                epochDiv.id = "epoch-div";
+                epochDiv.style.display = "none";
+                epochDiv.textContent = `${d.data().timestamp}`;
+                liToAppend.appendChild(epochDiv);
+
+
                 document.getElementById("swipe-list").appendChild(liToAppend);
             }
         })
@@ -239,27 +252,63 @@ const filterSubmit = async function (event) {
     event.preventDefault();
 
     const id = document.getElementById("filter-id").value;
-    const startDate = document.getElementById("filter-date-start").value;
-    const endDate = document.getElementById("filter-date-end").value;
+    const date = document.getElementById("filter-date").value;
     const startTime = document.getElementById("filter-time-start").value;
     const endTime = document.getElementById("filter-time-end").value;
 
-    console.log(`${id} ${startDate} ${endDate} ${startTime} ${endTime}`)
-
     const idList = document.getElementById("student-list").children;
     for (const child of idList) {
-        if (child.querySelector("#id-div").textContent != id) {
-            child.style.display = "none";
-        } else {
-            child.style.display = "flex"
+        if (id != "") {
+            if (child.querySelector("#id-div").textContent != id) {
+                child.style.display = "none";
+            } else {
+                child.style.display = "flex";
+            }
         }
     }
     const swipeList = document.getElementById("swipe-list").children;
     for (const child of swipeList) {
-        if (child.querySelector("#id-div").textContent != id) {
-            child.style.display = "none";
-        } else {
-            child.style.display = "flex"
+        if (id != "") {
+            if (child.querySelector("#id-div").textContent != id) {
+                child.style.display = "none";
+            } else {
+                child.style.display = "flex";
+            }
+        }
+
+        if (date != "") {
+            const dateObj = new Date(date);
+            dateObj.setDate(dateObj.getDate() + 1)
+            const childDateObj = new Date(Number(child.querySelector("#epoch-div").textContent));
+
+            if (dateObj.getFullYear() != childDateObj.getFullYear() || dateObj.getMonth() != childDateObj.getMonth() || dateObj.getDate() != childDateObj.getDate()) {
+                child.style.display = "none";
+            } else {
+                child.style.display = "flex";
+            }
+        }
+
+        if (startTime != "" && endTime != "") {
+
+            const startObj = new Date();
+            const [sHours, sMinutes] = startTime.split(":");
+            startObj.setHours(Number(sHours));
+            startObj.setMinutes(Number(sMinutes));
+
+            const endObj = new Date();
+            const [eHours, eMinutes] = endTime.split(":");
+            endObj.setHours(Number(eHours));
+            endObj.setMinutes(Number(eMinutes));
+
+            const childDateObj = new Date(Number(child.querySelector("#epoch-div").textContent));
+
+            console.log(childDateObj.getHours() + " " + startObj.getHours() + " " + endObj.getHours())
+
+            if (startObj.getHours() - 1 <= childDateObj.getHours() && childDateObj.getHours() <= endObj.getHours() + 1) {
+                child.style.display = "flex";
+            } else {
+                child.style.display = "none";
+            }
         }
     }
 };
