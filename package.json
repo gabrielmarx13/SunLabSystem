@@ -2,7 +2,7 @@
   "name": "sunlabsystem",
   "productName": "sunlabsystem",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "CMPSC487W Project 1",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",

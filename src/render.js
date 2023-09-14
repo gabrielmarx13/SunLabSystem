@@ -81,20 +81,22 @@ const userQuery = async function () {
             if (selectedOption != "admin") {
                 await addDoc(collection(db, "swipes"), swipeConverter.toFirestore(new Swipe(possibleId, selectedOption, Date.now())))
             }
-
-            if (possiblePermission == "authorized-person" && selectedOption == "admin") {
-                document.getElementById("swipe-menu").style.display = "none";
-                document.getElementById("filter-div").style.display = "inline";
-                swipeQuery();
-            } else if (possiblePermission == "all" && selectedOption == "admin") {
-                document.getElementById("swipe-menu").style.display = "none";
-                document.getElementById("filter-div").style.display = "inline";
-                swipeQuery();
-                userHydrate();
-            }
-
+            
             if (selectedOption == "admin") {
-                alert("Welcome to the administrator tools.")
+                if (possiblePermission == "authorized-person") {
+                    document.getElementById("swipe-menu").style.display = "none";
+                    document.getElementById("filter-div").style.display = "inline";
+                    swipeQuery();
+                    alert("Welcome to the administrator section.")
+                } else if (possiblePermission == "all") {
+                    document.getElementById("swipe-menu").style.display = "none";
+                    document.getElementById("filter-div").style.display = "inline";
+                    swipeQuery();
+                    userHydrate();
+                    alert("Welcome to the administrator section.")
+                } else if (possibleId == "student") {
+                    alert("You do not have administrator privileges.")
+                }
             } else {
                 alert(`Successfully swiped ${selectedOption}`)
             }
@@ -264,15 +266,18 @@ const filterSubmit = async function (event) {
             } else {
                 child.style.display = "flex";
             }
+        } else {
+            child.style.display = "flex";
         }
     }
     const swipeList = document.getElementById("swipe-list").children;
     for (const child of swipeList) {
+        let idB = true, dateB = true, timeB = true;
         if (id != "") {
             if (child.querySelector("#id-div").textContent != id) {
-                child.style.display = "none";
+                idB = false;
             } else {
-                child.style.display = "flex";
+                idB = true;
             }
         }
 
@@ -282,9 +287,9 @@ const filterSubmit = async function (event) {
             const childDateObj = new Date(Number(child.querySelector("#epoch-div").textContent));
 
             if (dateObj.getFullYear() != childDateObj.getFullYear() || dateObj.getMonth() != childDateObj.getMonth() || dateObj.getDate() != childDateObj.getDate()) {
-                child.style.display = "none";
+                dateB = false;
             } else {
-                child.style.display = "flex";
+                dateB = true;
             }
         }
 
@@ -305,10 +310,16 @@ const filterSubmit = async function (event) {
             console.log(childDateObj.getHours() + " " + startObj.getHours() + " " + endObj.getHours())
 
             if (startObj.getHours() - 1 <= childDateObj.getHours() && childDateObj.getHours() <= endObj.getHours() + 1) {
-                child.style.display = "flex";
+                timeB = true;
             } else {
-                child.style.display = "none";
+                timeB = false;
             }
+        }
+
+        if ((idB && dateB) && timeB) {
+            child.style.display = "flex";
+        } else {
+            child.style.display = "none";
         }
     }
 };
